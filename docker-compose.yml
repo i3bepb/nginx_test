@@ -1,0 +1,24 @@
+version: "3"
+networks:
+  net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "${NETWORK_RANGE}"
+services:
+  nginx:
+    build:
+      context: ./docker/nginx
+      args:
+        MY_USER: "${MY_USER}"
+        MY_USER_ID: "${MY_USER_ID}"
+    networks:
+      - net
+    env_file:
+      - .env
+    volumes:
+      - ./docker/nginx/config/nginx.conf:/etc/nginx/templates/nginx.conf.template:ro
+      - ./public:/usr/share/nginx/html:rw
+    ports:
+      - "${NGINX_PORT}:${NGINX_PORT}/tcp"
+    command: [nginx-debug, '-g', 'daemon off;']
